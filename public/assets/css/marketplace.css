@@ -1,0 +1,136 @@
+.product{
+    padding-top: 50px;
+}
+
+.product h1{
+    font-weight: 700;
+    font-size: 30px;
+}
+
+.featured {
+    margin-top: 10px;
+    margin-bottom: 50px;
+}
+.featured-content{
+    background: #F6F7F7;
+    margin: 0 auto;
+    padding: 15px;
+}
+.featured-image{
+    text-align: center;
+}
+.featured-content-action{
+    margin-top: 15px;
+}
+.item-description{
+    background: #F6F7F7;
+    padding: 15px;
+    margin-top: 30px;
+}
+.license-specification li{
+    list-style: none;
+}
+.license-specification i{
+    color: #0D72FD;
+}
+
+.purchase-price{
+    font-size: 35px;
+    font-weight: 700;
+}
+
+.total-sales{
+    background: #f2f2f2;
+    margin-top: 20px;
+    font-size: 25px;
+    font-weight: 700;
+    padding: 20px;
+}
+.total-rating{
+    background: #f2f2f2;
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 20px;
+}
+
+.total-rating i {
+    color: #F2B827;
+}
+
+.product-information{
+    margin-top: 20px;
+    background: #f2f2f2;
+    padding: 20px;
+}
+
+.product-information .details{
+    margin-top: 30px;
+}
+.product-information .title{
+    font-weight: bold;
+}
+
+.product-information .section{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #f9f9f9;
+}
+
+.product-information .section:last-child{
+    border-bottom: 1px solid transparent;
+}
+
+.cart-details{
+    margin-top: 20px;
+}
+.featured .cart-details .typography{
+    padding: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}
+.featured .cart-details .licenseing-tag{
+    font-size: 14px;
+    font-weight: 400;
+}
+.featured .cart-details a{
+    text-decoration: none;
+    color: #212529;
+    transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -o-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+}
+
+.featured .cart-details a:hover{
+    color: #214EEC;
+}
+
+.featured .cart-details .cart-item{
+    border-bottom: 1px solid #f9f9f9;
+}
+
+.featured .cart-details .cart-item:last-child{
+    border-bottom: 1px solid transparent;
+}
+
+.text-a-left{
+    text-align: left;
+}
+.text-a-center{
+    text-align: center;
+}
+
+.text-a-right{
+    text-align: right;
+}
+
+.deposit-panel{
+    font-size: 20px;
+}
+.preview-pane{
+    margin-bottom: 25px;
+}

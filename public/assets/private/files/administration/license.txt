@@ -1,0 +1,31 @@
+
+
+
+####  ##   ##	####  ##      ##   ##    ##    #######
+ ##   ###  ##	 ##   ##      ##   ##    ##    ##   ##
+ ##   #### ##	 ##   ##########   ##	 ##    #####
+ ##   ##  ###	 ##   ##      ##   ##    ##    ##   ##
+####  ##   ##	####  ##      ##   ########    #######
+
+
+================== License Cetificate ==================
+
+This document certifies the purchase of the following license: {{license_type}}.
+Details of the license can be accessed from your downloads page.
+
+
+Item Title: {{product_name}}
+Item URL: {{product_url}}
+License Type: {{license_type}}
+License Key: {{key}}
+Purchase Date: {{purchase_date}}
+
+For any queries related to this document or license please contact Envato Support via https://inihub.com/contact
+
+
+================== License Cetificate ==================
+
+
+Inihub
+https://inihub.com
+support@inihub.com
