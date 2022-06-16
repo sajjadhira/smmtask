@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Settings;
 
 use App\Invoices;
+use App\Orders;
 use App\Expenses;
 use App\Users;
 use App\Products;
@@ -36,15 +37,27 @@ class DashboardController extends Controller
 
 
 
-        $data['total_sale'] = Invoices::where('status','=',2)->count('created_at');
+        $data['total_sale'] = Orders::where('price','>',0)->get()->count();
+        $data['total_sale_points'] = Orders::where('price','>',0)->sum('price');
+        $data['this_month_sale'] = Orders::whereMonth('created_at',date('m'))->where('price','>',0)->get()->count();
+        // return [$data['this_month_sale']];
+        $data['this_month_amount_sale'] = Orders::whereMonth('created_at',date('m'))->where('price','>',0)->sum('price');
         $data['amount_sale'] = Invoices::where('status','=',2)->sum('total');
         $data['amount_expense'] = Expenses::whereRaw('DATE(created_at) = CURDATE()')->sum('amount');
-        $data['this_month_amount_sale'] = Invoices::whereMonth('created_at',date('m'))->where('status','=',2)->sum('total');
-        $data['this_month_sale'] = Invoices::whereMonth('created_at',date('m'))->where('status','=',2)->count('created_at');
+        // $data['this_month_sale'] = Invoices::whereMonth('created_at',date('m'))->where('status','=',2)->count('created_at');
 
-        $data['total_customer'] = Users::where('role','user')->count('id');
+        $last24h = date('Y-m-d H:i:s',time()-(48*3600));
+
+        $data['total_customer'] = Users::where('role','user')->get()->count();
+        $data['total_customer_active'] = Users::where('role','user')->where('updated_at','>',$last24h)->get()->count();
+        $data['total_customer_inactive'] = Users::where('role','user')->where('updated_at','<',$last24h)->get()->count();
 
         $data['total_products'] = Products::get()->count('created_at');
+        $data['total_products_active'] = Products::where('status',0)->get()->count();
+        $data['total_products_inactive'] = Products::where('status','>',0)->get()->count();
+        $data['total_products_view'] = Products::where('status','>',0)->where('product_type','Youtube Video')->get()->count();
+        $data['total_products_subscribe'] = Products::where('status','>',0)->where('product_type','Youtube Subscribe')->get()->count();
+        $data['total_products_vpn'] = Products::where('status','>',0)->where('product_type','Do VPN Task')->get()->count();
         $data['best_sellings'] = Products::orderBy('amount_sold','DESC')->take(20)->get();
 
     	return view('apps.dashboard')->withData($data);

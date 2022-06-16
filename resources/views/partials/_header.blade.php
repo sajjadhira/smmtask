@@ -14,7 +14,7 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
    
 		<li class="nav-item">
-          <a aria-current="page" href="{{url('/')}}">Home</a>
+          <a aria-current="page" href="{{url('/')}}"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
         </li>
 		
         {{-- <li class="nav-item dropdown">
@@ -27,18 +27,11 @@
             @endforeach
           </ul>
         </li>		 --}}
+
 		<li class="nav-item">
-          <a aria-current="page" href="#">About</a>
-        </li>	
-		
-		<li class="nav-item">
-          <a aria-current="page" href="#">Contact</a>
+          <a aria-current="page" href="{{url('dotasks')}}"><i class="fa fa-money" aria-hidden="true"></i> Do Task</a>
     </li>	
-		@if(session('cart'))
-		<li class="nav-item">
-          <a aria-current="page" href="{{url('cart')}}">Cart <span class="badge bg-primary">{{count(session('cart'))}}</span></a>
-    </li>	
-    @endif
+  
 
   
       </ul>
@@ -58,6 +51,31 @@
           
         @else
 
+        
+		
+	    <li class="nav-item dropdown">
+        <a class="dropdown-toggle" href="#" id="publisherNav" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fa fa-bullhorn" aria-hidden="true"></i>  Publisher Menu
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="publisherNav">
+          <li><a class="dropdown-item" href="{{url('deposit')}}">Buy Points</a></li>
+          <li><a class="dropdown-item" href="{{url('payments')}}">Payments</a></li>
+          <li><a class="dropdown-item" href="{{url('newtask')}}">Publish a Tasks</a></li>
+          <li><a class="dropdown-item" href="{{url('mytasks')}}">My Published Tasks</a></li>
+        </ul>
+      </li>	
+		
+	    <li class="nav-item dropdown">
+        <a class="dropdown-toggle" href="#" id="userNav" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fa fa-user-circle" aria-hidden="true"></i>  User Menu
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="userNav">
+          <li><a class="dropdown-item" href="{{url('dotasks')}}">Do Task</a></li>
+          <li><a class="dropdown-item" href="{{url('downloads')}}">Completed Tasks</a></li>
+          <li><a class="dropdown-item" href="{{url('convert')}}">Convert Points</a></li>
+          <li><a class="dropdown-item" href="{{url('withdraw')}}">Withdraw Balance</a></li>
+        </ul>
+      </li>	
 		
 	    <li class="nav-item dropdown">
           <a class="dropdown-toggle" href="#" id="userNav" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -68,7 +86,7 @@
             <li><a class="dropdown-item" href="{{url('dashboard')}}">Dashboard</a></li>
             @endif
             <li><a class="dropdown-item" href="{{url('my-account')}}">Profile</a></li>
-            <li><a class="dropdown-item" href="{{url('downloads')}}">Completed Tasks</a></li>
+            <li><a class="dropdown-item" href="{{url('transactions')}}">Transactions</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="#" onclick="event.preventDefault();
               document.getElementById('logout-form').submit();">Logout</a></li>

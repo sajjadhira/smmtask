@@ -13,23 +13,8 @@
 			
             <div class="container my-account">
 								
-                <div class="row">
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="row ">
 
-
-						<div class="card ">
-							<div class="card-header">
-								Dashboard
-							</div>
-							<div class="card-body">
-
-                                @include('website.user.menu')
-
-
-							</div>
-						  </div>
-		
-                    </div>
 
 
 					<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 details">
@@ -73,7 +58,7 @@
 
                                 <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="name">Network Free 5%</label>
+                                    <label for="name">Network Fee 5%</label>
                                     <input name="netfee" id="netfee" class="form-control" value="{{$netFee}}" readonly="true" required>
                                 </div>
                                 </div>
@@ -114,9 +99,28 @@
 
 					</div>
 
+
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+
+
+						<div class="card ">
+							<div class="card-header">
+								Dashboard
+							</div>
+							<div class="card-body">
+
+                                @include('website.user.menu')
+
+
+							</div>
+						  </div>
+		
+                    </div>
+
                 </div>
 			
 			<!-- section END    -->
+            </div>
 
 
 @endsection

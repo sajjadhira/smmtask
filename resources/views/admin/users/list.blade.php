@@ -66,6 +66,7 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Balance</th>
+                            <th>Points</th>
                             <th>Role</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -76,7 +77,8 @@
                             <td>{{ $user->id }}</td>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
-                            <td>${{ $user->balance }}</td>
+                            <td>&#2547;{{ $user->balance }}</td>
+                            <td>{{ $user->point }}</td>
                             <td>{{ ucfirst($user->role) }}</td>
 
                             <td class="text-center">

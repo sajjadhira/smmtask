@@ -1,58 +1,57 @@
 @extends('layouts.dashboard')
-@section('title')
-Settings
-@endsection
+@section('title')Announcement @endsection
 
-@section('stylesheet')
+@section('css')
+<!-- additional js -->
+
 <link rel="stylesheet" type="text/css" href="{!! asset('app-assets/css/plugins/forms/wizard.css') !!}">
 <link rel="stylesheet" type="text/css" href="{!! asset('app-assets/vendors/css/forms/select/select2.min.css') !!}">
+
+<!-- ends additional css -->
 @endsection
 
 @section('content')
 
+<!-- main starts here -->
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    
+    <!-- starts heading & breadcrumb here -->
+    <h4 class="content-header-title float-left mb-0">Announcement</h4>
 
 
-    <!-- BEGIN: Content-->
-    <div class="app-content content col-md-12">
-        <div class="content-overlay"></div>
-        <div class="header-navbar-shadow"></div>
-        <div class="content-wrapper">
-            <div class="content-header row">
-                <div class="content-header-left col-md-9 col-12 mb-2">
-                    <div class="row breadcrumbs-top">
-                        <div class="col-12">
-  
-                        </div>
-                    </div>
-                </div>
-                <div class="content-header-right text-lg-right col-md-3 col-12 d-md-block d-none">
-                    <div class="form-group breadcrum-right">
-                            
-                    </div>
-                </div>
-            </div>
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{url('dashboard')}}">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="{{url('dashboard/settings')}}">Announcement</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Update Public Announcement</li>
+        </ol>
+
+    </nav>
+    <!-- ends heading & breadcrumb here -->
 
 
-                <!-- Form wizard with step validation section start -->
-                <section id="validation">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
+    <!-- starts main content here -->
+    <div class="row no-gutters app-content">
 
-                                <div class="card-content">
-                                    <div class="card-body">
+          <!-- columns starts here -->
+          <div class="col-md-12 col-xxl-12 mb-3 pr-md-2">
+
+            <!-- cards starts here -->
+            <div class="card h-md-100  w-md-d-card">
+                <div class="card-body ">
                                         <form method="POST" action="{{ url('settings/update') }}" class="steps-validation wizard-circle" id="form" enctype='multipart/form-data'>
                                         	@method('PATCH')
                                             <!-- Step 1 -->
-                                            <h6><i class="step-icon feather icon-image"></i> Basic Settings</h6>
+                                            <h6><i class="step-icon feather icon-image"></i> Public Announcement</h6>
                                             <fieldset>
                                                 <div class="row">
 
 
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label for="notice_type">
-                                                                Notice Type
+                                                                Announcement Type
                                                             </label>
                                                         <select name="notice_type" class="form-control">
                                                             <option value="">NOT SELECTED</option>
@@ -67,7 +66,7 @@ Settings
                                                     <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label for="notice">
-                                                                Notice
+                                                                Announcement Message
                                                             </label>
                                                             <textarea name="notice" class="form-control char-textarea" id="textarea-counter" rows="3" placeholder="Please input notice here or you can leave it empty if you don't want to display any notice...">{{$data['notice']}}</textarea>
                                                       
@@ -81,25 +80,33 @@ Settings
                                  
                                             @csrf
                                         </form>
+
                                     </div>
                                 </div>
+                                <!-- cards ends here -->
+                    
                             </div>
+                            <!-- table column ends here -->
+                    
+                    
                         </div>
-                    </div>
-                </section>
-                <!-- Form wizard with step validation section end -->
-
+                        <!-- main contents ends here -->
+                    
+                    </main>
+                    <!-- main ends here -->
+                    
 
 
 
 @endsection
 
-@section('javascript')
+@section('js')
 <!-- BEGIN: Page JS-->
+
 <script src="{!! asset('app-assets/vendors/js/extensions/jquery.steps.min.js') !!}"></script>
 <script src="{!! asset('app-assets/vendors/js/forms/validation/jquery.validate.min.js') !!}"></script>
 <script src="{!! asset('app-assets/js/scripts/forms/wizard-steps.js') !!}"></script>
-
+<script src="{!! asset('app-assets/vendors/js/forms/select/select2.full.min.js') !!}"></script>
 <!-- END: Page JS-->
 
 @endsection

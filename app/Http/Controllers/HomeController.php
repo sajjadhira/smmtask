@@ -51,6 +51,30 @@ class HomeController extends Controller
     public function index()
     {
 
+        // return [Session::get('affiliate')];
+
+        if(Session::get('affiliate')){
+
+            $affiliate = Session::get('affiliate');
+
+            if(Auth::check()){
+
+                //
+
+                if (Auth::user()->id != $affiliate) {
+                    
+                    $affUpdate = Users::findOrFail(Auth::user()->id);
+                    $affUpdate->affiliate = $affiliate;
+                    $affUpdate->save();
+                    Session::forget('affiliate');
+                    
+                }
+
+                //
+
+            }
+        }
+
         $redirect = session()->get('redirect');
         if($redirect){
             $redirect_to = session('redirect');
@@ -58,11 +82,28 @@ class HomeController extends Controller
             return redirect($redirect_to);
         }
 
+
         if(Auth::user()->role == 'user'){
-            return redirect('my-account');    
+            return redirect(url('/'));    
         }
+
         return redirect('dashboard');
 
+    }
+
+    public function reffer($id){
+
+        if (!Auth::check()) {
+            $userFind = Users::where('id', $id)->get();
+            if ($userFind->count() > 0) {
+                Session::put('affiliate', $id);
+
+                // return [Session::get('affiliate')];
+            }
+        }
+
+
+        return redirect('register');
     }
 
 
@@ -142,6 +183,9 @@ class HomeController extends Controller
                 $message = ['message' => 'You will not get task without google chrome and android.'];
                 // return response()->json($message);
             }
+
+
+            $data['orders'] = Invoices::where('status',1)->orderBy('id', 'desc')->paginate(50);
         // }
 
         return view('website.index')->withData($data);

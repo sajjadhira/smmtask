@@ -1,5 +1,5 @@
 @extends('layouts.dashboard')
-@section('title'){{__('Invoices')}}@endsection
+@section('title'){{__('Invoices ')}}@endsection
 
 @section('stylesheet')
 <!-- additional js -->
@@ -53,15 +53,21 @@
                         </thead>
                         <tbody>
                             @foreach ($data['orders'] as $order)
+
+                            @php
+                                $order_details_explode = explode('to',$order->sale_tracking);
+                                $type = trim($order_details_explode[0]);
+                                $account = trim($order_details_explode[1]);
+                            @endphp
                             <tr>
                                 <td>{{\App\Users::find($order->user)->name}}</td>
                                 <td>&#2547;{{$order->total}}</td>
-                                <td>{{\App\Users::find($order->user)->payment_method}}</td>
-                                <td>{{\App\Users::find($order->user)->payment_account}}</td>
+                                <td>{{$type}}</td>
+                                <td>{{$account}}</td>
                                 <td>@if($order->status==0)<span class="badge bg-primary">In Progress</span>@elseif($order->status==1)<span class="badge bg-success">Paid</span>@elseif($order->status==2)<span class="badge bg-danger">Declined</span>@endif</td>
                                 
                                 <td>
-                                  <td>@if($order->status==0)
+                                  @if($order->status==0)
                                   <a href="{{url('dashboard/payment/confirm/'.$order->id)}}"  onclick="return confirm('Are you sure, you sent the payment to the user?')"><button class="btn btn-primary">Make Payment</button></a>
                                   @endif
                                 </td>

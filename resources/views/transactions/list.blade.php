@@ -12,9 +12,9 @@
 			<!-- section -->
 			
             <div class="container product">
-				<h1 class="text-center">Transactions</h1>
+				      <h1 class="text-center">Transactions</h1>
                 <div class="row featured">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
 
 
 						<div class="card cart-details">
@@ -69,6 +69,24 @@
 						  </div>
 		
                     </div>
+
+
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12  my-account">
+
+
+                      <div class="card ">
+                        <div class="card-header">
+                          Dashboard
+                        </div>
+                        <div class="card-body">
+          
+                                          @include('website.user.menu')
+          
+          
+                        </div>
+                        </div>
+              
+                      </div>
                 </div>
             </div>
 			

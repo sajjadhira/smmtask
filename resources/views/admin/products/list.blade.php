@@ -46,7 +46,10 @@
                             <th>ID</th>
                             <th>Name</th>
                             <th>Category</th>
+                            <th>Publisher</th>
                             <th>PPA</th>
+                            <th>Budget</th>
+                            <th>Budget Reached</th>
                             <th>Action</th>
                           </tr>
                         </thead>
@@ -56,7 +59,10 @@
                                 <td>{{$item->id}}</td>
                                 <td>{{$item->name}}</td>
                                 <td>{{\App\Categories::findOrFail($item->category)->name}}</td>
+                                <td>{{\App\Users::findOrFail($item->user)->name}}</td>
                                 <td>{{number_format($item->price)}} Points</td>
+                                <td>{{number_format($item->budget)}} Points</td>
+                                <td>{{number_format($item->amount_sold)}} Points</td>
                                 <td><a href="{{ url('dashboard/products/edit/'.$item->id) }}"><span class="badge bg-primary text-white"><i class="feather icon-edit"></i> Update</span></a></td>
                               </tr>          
                             @endforeach

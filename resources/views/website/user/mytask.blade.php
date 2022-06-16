@@ -14,7 +14,7 @@
             <div class="container product">
 				<h1 class="text-center">List of your Published Tasks</h1>
                 <div class="row featured">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
                       
                       
                       <div class="card cart-details">
@@ -36,17 +36,35 @@
                             <th>Total Completed</th>
                             <th>Status</th>
                             <th>Publish Date</th>
+                            <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
                             @foreach ($tasks as $task)
                             <tr>
-                              <td>{{$task->name}}</td>
-                              <td>{{$task->price}} Points</td>
-                              <td>{{$task->budget}} Points</td>
-                              <td>{{\App\Orders::where('product',$task->id)->get()->count()}}</td>
-                              <td>@if($task->status==0)<span class="text-success">Running</span>@elseif($task->budget==$task->aomunt_sold)<span class="text-success">Completed</span>@elseif($task->status==2)<span class="text-danger">Declined</span> @endif</td>
+                              <td>ID {{$task->id}} # {{$task->name}}</td>
+                              <td>{{number_format($task->price)}} Points</td>
+                              <td>{{number_format($task->budget)}} Points</td>
+                              <td>{{number_format($task->amount_sold)}} Points ({{\App\Orders::where('product',$task->id)->get()->count()}})</td>
+                              <td>@if($task->status==0)<span class="text-success">Running</span>@elseif($task->budget==$task->aomunt_sold)<span class="text-success">Completed</span>@elseif($task->status==1)<span class="text-danger">Stopped</span>@elseif($task->status==2)<span class="text-danger">Closed</span>@elseif($task->status==3)<span class="text-danger">Declined</span> @endif</td>
                               <td>{{date("jS F Y",strtotime($task->created_at))}}</td>
+                              <td>
+                                
+                                @if($task->status <3)
+                                <a href="{{url('mytasks/edit/'.$task->id)}}" class="text-primary">Update Budget</a>
+                                @if($task->status <2)
+                                
+                                @if($task->status == 0)
+                                <br/><a href="{{url('mytasks/status/'.$task->id.'/1')}}" class="text-warning">Stop Task</a>
+                                @else
+                                <br/><a href="{{url('mytasks/status/'.$task->id.'/0')}}" class="text-success">Start Task</a>
+                                @endif
+                                <br/><a href="{{url('mytasks/status/'.$task->id.'/2')}}" class="text-danger"  onclick="return confirm('Do you wanna close this task? Action can not be undone.')">Close &amp; Refund Point</a>
+
+                                @endif
+                                @endif
+
+                              </td>
                             </tr>          
                             @endforeach
                             
@@ -67,7 +85,7 @@
                   </div>
 		
                 </div>
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12  my-account">
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4  my-account">
                   
                   <div class="card ">
                     <div class="card-header">

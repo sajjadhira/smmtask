@@ -32,7 +32,7 @@ section .section-title {
 	padding: 15px;
 	position: fixed;
 	right: 15px;
-	top: 135px;
+	top: 65px;
 	transition: all 0.1s ease-in-out;
 	-moz-transition: all 0.1s ease-in-out;
 	-webkit-transition: all 0.1s ease-in-out;

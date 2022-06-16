@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title'){{__("Deposit Balance")}}@endsection
+@section('title'){{__("Buy Points")}}@endsection
 
 @section('css')
 <link rel="stylesheet" href="{{url('assets/css/marketplace.css')}}">
@@ -33,7 +33,7 @@
                         @php
                             $purchased = \App\Orders::where('user',Auth::user()->id)->get()->count()
                         @endphp
-						<div class="purchased-total"><span class="text-muted">Purchased</span> {{$purchased}} {{__("Item")}}@if($purchased>1){{__("s")}}@endif</div>
+						<div class="purchased-total"><span class="text-muted">Completed Task</span> {{$purchased}} {{__("Item")}}@if($purchased>1){{__("s")}}@endif</div>
 					</div>
 				</div>
 
@@ -51,7 +51,7 @@
                             
                               
                         <!-- Step 1 -->
-                        <h3 class="text-center"> Deposit Balance</h3>
+                        <h3 class="text-center">Buy Points</h3>
                         <fieldset>
 
                             <p class="text-center">
@@ -60,7 +60,7 @@
     
                             <div class="row">
     
-                                <div class="col-md-12">
+                                <div class="col-md-12 mb-1">
                                 <div class="form-group">
                                     <label for="name">Type of Payment</label>
                                     
@@ -78,28 +78,38 @@
 
 
 
-                                <div class="col-md-12">
+                                <div class="col-md-12 mb-1">
                                 <div class="form-group">
                                     <label for="name">From Acoount Number</label>
                                     <input class="form-control required" id="from_number" type="text" name="from_number" required="" minlength="11" maxlength="12" placeholder="01XXXXXXXXX">
                                 </div>
                                 </div>
 
-                                <div class="col-md-12">
+                                <div class="col-md-12 mb-1">
                                 <div class="form-group">
                                     <label for="name">Amount (BDT)</label>
                                     <input class="form-control required" id="amount" type="number" name="amount" required="" min="100" placeholder="Amount 100-50000">
                                 </div>
                                 </div>
 
-                                <div class="col-md-12">
+                                
+
+                                <div class="col-md-12 mb-1">
+                                    <div class="form-group">
+                                        <label for="name">Transaction ID</label>
+                                        <input class="form-control required" id="trxid" type="text" name="trxid" required="" placeholder="Please Input Transaction ID">
+                                    </div>
+                                    </div>
+
+                                    
+                                <div class="col-md-12 mb-1">
                                 <div class="form-group">
-                                    <label for="name">Points will deposit to account</label>
+                                    <label for="name">Points will added to account</label>
                                     <input class="form-control required" id="points" type="number" name="points" required="" readonly>
                                 </div>
                                 </div>
     
-                                <div class="col-md-12">
+                                <div class="col-md-12 mb-1">
                                 <div class="form-group">
                                     <div class="checkbox mb-3">
                                         <label class="text-danger">
@@ -111,7 +121,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <button type="submit" class="btn btn-transform-primary">Preview Deposit Request</button>
+                                        <button type="submit" class="btn btn-transform-primary">Preview Buy Request</button>
                                     </div>
                                     </div>
     

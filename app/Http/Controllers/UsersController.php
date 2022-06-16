@@ -26,6 +26,22 @@ class UsersController extends Controller
     }
 
 
+    
+    public function scrap($url)	{
+        $curl = curl_init($url);
+        $ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9';
+        curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER["HTTP_USER_AGENT"]);
+        curl_setopt($curl, CURLOPT_FAILONERROR, true);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    
+        $html = curl_exec($curl);
+        curl_close($curl);
+    
+        return $html;
+    } 
+
+
     public function find(Request $request){
 
     	$q = trim($request->input('q'));
@@ -553,6 +569,7 @@ class UsersController extends Controller
         $this->validate($request,[
             'type'      =>  'required',
             'from_number'      =>  'required',
+            'trxid'      =>  'required',
             'amount'      =>  'required|numeric',
             'points'      =>  'required|numeric',
             'agree'     =>  'required'
@@ -562,6 +579,7 @@ class UsersController extends Controller
         
         $deposit["type"] = $request->type;
         $deposit["from_number"] = $request->from_number;
+        $deposit["trxid"] = $request->trxid;
         $deposit["amount"] = $request->amount;
         $deposit["points"] = $request->amount * 100;
         // $deposit["charge"] = ceil($request->amount * 5) / 100;
@@ -576,6 +594,113 @@ class UsersController extends Controller
         return view('website.user.deposit-preview');
     }
 
+    public function channel_info(Request $request){
+
+        header('Content-Type: application/json');
+
+        if ($request->has('channel') && strlen($request->channel)) {
+            $channel = $request->channel;
+
+        }else{
+            $message = ['result'=>'error','message'=>'Invalid Channel Link'];
+            return response()->json($message);
+        }
+
+        $product = Products::where('channel_id',$channel)->get();
+        if($product->count() >0 ){
+            $message = ['result'=>'error','message'=>'This channel is already exists.'];
+            return response()->json($message);
+        }
+
+
+
+            $api_endpoint = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id='.$channel.'&key=AIzaSyCt6p_Op77g9BJ0KOOBeHpAp27hO-HMMOk';
+            $get_content = $this->scrap($api_endpoint);
+            // return [$get_content];
+
+
+            $content = json_decode($get_content);
+            if($content->pageInfo->totalResults == 0){
+                $message = ['result'=>'error','message'=>'Invalid Channel Link'];
+            }else{
+
+                $hidden = $content->items[0]->statistics->hiddenSubscriberCount;
+                
+                if($hidden == false){
+
+                    $subscriber = $content->items[0]->statistics->subscriberCount;
+                    $viewCount = $content->items[0]->statistics->viewCount;
+                    $videoCount = $content->items[0]->statistics->videoCount;
+
+                    if($subscriber >= 1000){
+                        $message = ['result'=>'error','message'=>'Your current subscribers are '.$subscriber.'+ we only accept less then 1000 subscriber.'];
+                    }else{
+                        $need = 1000 - $subscriber;
+                        $budget = $need * 200;
+                        $msg = 'You have currently '.$subscriber.' subscriber, '.$videoCount.' videos and total '.$viewCount.' views on your channel.
+                         You need more <b>'.$need.'</b> subscribers to complete 1000 subscriber. You can set budget <b>'.$budget.'</b> points for gain '.$need.' subscriber and reach 1000 subscriber.';
+                        $message = ['result'=>'success','subscriber'=> $content->items[0]->statistics->subscriberCount,'videos'=> $content->items[0]->statistics->videoCount,'message'=>$msg];
+                    }
+                    
+                }else{
+                    $message = ['result'=>'error','message'=>'Your channel subscriber is hidden please make it public and try again'];
+                }
+
+                // return [$hidden];
+
+            }
+
+            // return [$content->items[0]->statistics->subscriberCount];
+
+        return response()->json($message);
+
+    }
+
+    public function channel_data($channel){
+
+        header('Content-Type: application/json');
+
+            $api_endpoint = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id='.$channel.'&key=AIzaSyCt6p_Op77g9BJ0KOOBeHpAp27hO-HMMOk';
+            $get_content = $this->scrap($api_endpoint);
+            // return [$get_content];
+
+
+            $content = json_decode($get_content);
+            if($content->pageInfo->totalResults == 0){
+                $message = ['result'=>'error','message'=>'Invalid Channel Link'];
+            }else{
+
+                $hidden = $content->items[0]->statistics->hiddenSubscriberCount;
+                
+                if($hidden == false){
+
+                    $subscriber = $content->items[0]->statistics->subscriberCount;
+                    $viewCount = $content->items[0]->statistics->viewCount;
+                    $videoCount = $content->items[0]->statistics->videoCount;
+
+                    if($subscriber >= 1000){
+                        $message = ['result'=>'error','message'=>'Your current subscribers are '.$subscriber.'+ we only accept less then 1000 subscriber.'];
+                    }else{
+                        $need = 1000 - $subscriber;
+                        $budget = $need * 200;
+                        $msg = 'You have currently '.$subscriber.' subscriber, '.$videoCount.' videos and total '.$viewCount.' views on your channel.
+                         You need more <b>'.$need.'</b> subscribers to complete 1000 subscriber. You can set budget <b>'.$budget.'</b> points for gain '.$need.' subscriber and reach 1000 subscriber.';
+                        $message = ['result'=>'success','subscriber'=> $content->items[0]->statistics->subscriberCount,'videos'=> $content->items[0]->statistics->videoCount,'message'=>$msg];
+                    }
+                    
+                }else{
+                    $message = ['result'=>'error','message'=>'Your channel subscriber is hidden please make it public and try again'];
+                }
+
+                // return [$hidden];
+
+            }
+
+            // return [$content->items[0]->statistics->subscriberCount];
+
+        return response()->json($message);
+
+    }
     
     public function canaccess(){
         $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
@@ -593,41 +718,97 @@ class UsersController extends Controller
         
     }
 
+    public function skipTask($id){
+        $task = Products::findOrFail($id);
+
+        $order = new Orders;
+        $order->product = $id;
+        $order->user = Auth::user()->id;
+        $order->task_type = $task->product_type;
+        $order->save();
+        
+        $message = ['type'=>'success','message'=>'The order has skipped successfully.'];
+
+        Session::flash('message',$message);
+        return redirect(url('dotasks'));
+
+    }
      public function dotask(Request $request){
 
-        $ipdata = Session::put('ip');
-        $ip = request()->ip();
 
-        if(is_null($ipdata) || $ipdata!=$ip){
+        $updated_at = time() - 300;
+        $updated_date = date("Y-m-d H:i:s",$updated_at);
 
-            $location_URL = 'http://ip-api.com/json/'. $ip;
-            $location_JSON = json_decode($this->scrap($location_URL));
-            if ($location_JSON->status == 'success') {
-                if($location_JSON->countryCode == "BD"){
-                    Session::put('ip', $ip);
-                    if(Auth::check()){
-                        $ipc = Iptables::where('ip',$ip)->where('browser',$_SERVER['HTTP_USER_AGENT'])->get();
+        $getHang = Products::where('status',10)->where('updated_at','<=',$updated_date)->take(15)->get();
+        foreach($getHang as $key => $hanged){
+            $release_task = Products::findOrFail($hanged->id);
+            $release_task->status = 0;
+            $release_task->save();
+        }
 
-                        if($ipc->count() > 0 ){
-                            $ipdbinfo = $ipc[0];
-                            if($ipdbinfo->user != Auth::user()->id){
-                                $msg = ['message'=>'Multiple user login prohabited!'];
-                                return response()->json($msg);               
+
+        if ($_SERVER['HTTP_HOST'] != '127.0.0.1:8000') {
+            
+            $ipdata = Session::put('ip');
+            $ip = request()->ip();
+
+            if (is_null($ipdata) || $ipdata!=$ip) {
+
+                $location_URL = 'http://ip-api.com/json/'. $ip;
+                $location_JSON = json_decode($this->scrap($location_URL));
+
+                $countrCode = $location_JSON->countryCode;
+                $countryName = $location_JSON->country;
+                Session::put('ip', $ip);
+                Session::put('country', $countrCode);
+                Session::put('countryName', $countryName);
+
+
+            }
+
+            $getcountryCode = Session::get('country');
+            $getcountryName = Session::get('countryName');
+
+            if(!isset($getcountryCode)){
+
+                return redirect(url()->current());
+
+            }
+
+
+            /*
+
+            if (is_null($ipdata) || $ipdata!=$ip) {
+                $location_URL = 'http://ip-api.com/json/'. $ip;
+                $location_JSON = json_decode($this->scrap($location_URL));
+                if ($location_JSON->status == 'success') {
+                    if ($location_JSON->countryCode == "BD" || $location_JSON->countryCode == "IN") {
+                        Session::put('ip', $ip);
+                        if (Auth::check()) {
+                            $ipc = Iptables::where('ip', $ip)->where('browser', $_SERVER['HTTP_USER_AGENT'])->get();
+
+                            if ($ipc->count() > 0) {
+                                $ipdbinfo = $ipc[0];
+                                if ($ipdbinfo->user != Auth::user()->id) {
+                                    $msg = ['message'=>'Multiple user login prohabited!'];
+                                    return response()->json($msg);
+                                }
+                            } else {
+                                $ips = new Iptables;
+                                $ips->user = Auth::user()->id;
+                                $ips->ip = $ip;
+                                $ips->browser = $_SERVER['HTTP_USER_AGENT'];
+                                $ips->save();
                             }
-                        }else{
-                            $ips = new Iptables;
-                            $ips->user = Auth::user()->id;
-                            $ips->ip = $ip;
-                            $ips->browser = $_SERVER['HTTP_USER_AGENT'];
-                            $ips->save();
                         }
+                    } else {
+                        $msg = ['message'=>'You can\'t access this page without accepted country!'];
+                        return response()->json($msg);
                     }
-                }else{
-                    $msg = ['message'=>'You can\'t access this page without accepted country!'];
-                    return response()->json($msg);
                 }
             }
 
+            */
         }
 
         $data['err_message'] = NULL;
@@ -676,6 +857,26 @@ class UsersController extends Controller
                         $info['response'] = 'failed';
                     }
 
+                    if($taskinfo->product_type == "Youtube Subscribe"){
+
+                        $init_subscriber = Session::get('init_subscriber');
+                        $api_endpoint = $this->channel_data($taskinfo->channel_id);
+                        $now_subscriber = $api_endpoint->original['subscriber'];
+
+                        if($now_subscriber<=$init_subscriber){
+
+                            $info['response'] = 'failed';
+
+                        }
+
+                        if($now_subscriber>=1000){
+                            $forceStop = Products::findOrFail($taskinfo->id);
+                            $forceStop->status = 1;
+                            $forceStop->save();
+                        }
+
+                    }
+
 
                 }else{
                     $info['response'] = 'failed';
@@ -690,10 +891,20 @@ class UsersController extends Controller
                     
                     
                     $userUpdate = Users::findOrFail(Auth::user()->id);
-                    $point = $userUpdate->point + $taskinfo->price;
+
+                    //
+                    if ($taskinfo->product_type == "Youtube Subscribe") {
+                        $reward_amount = 200;
+                        $point = $userUpdate->point + $reward_amount;
+                    }else{
+                        $reward_amount  = $taskinfo->price;
+                        $point = $userUpdate->point + $reward_amount;
+                    }
+                    //
                     $userUpdate->point = $point;
                     $userUpdate->save();
                     
+
                     
                     // update the task
                     $old_sales = $taskinfo->sales;
@@ -705,6 +916,10 @@ class UsersController extends Controller
                     $remain = $taskinfo->budget - $new_amount_sold;
                     
                     $c_task = Products::findOrFail($taskinfo->id);
+
+                    if ($taskinfo->product_type == "Youtube Subscribe") {
+                        $c_task->status = 0;
+                    }
                     
                     if($remain < $taskinfo->price){
                         $c_task->status = 1;
@@ -717,16 +932,82 @@ class UsersController extends Controller
                     $orderUpdate = new orders;
                     $orderUpdate->user = Auth::user()->id;
                     $orderUpdate->product = $taskinfo->id;
-                    $orderUpdate->price = $taskinfo->price;
-                    $orderUpdate->save();
+                    $orderUpdate->price = $reward_amount;
+                    $orderUpdate->task_type = $taskinfo->product_type;
+
                     
-                    $message = ['type'=>'success','message'=>'Task has been completed and verified successfully, '.$taskinfo->price.' point has added to your account.'];
+                    // do something for reffer 
+
+                    if(!is_null(Auth::user()->affiliate)){
+
+                        $orderUpdate->affiliate = Auth::user()->affiliate;
+
+                        $aff_reward = ( $reward_amount / 100 ) * 5;
+
+                        $aff_user = Users::findOrFail(Auth::user()->affiliate);
+                        $aff_points = $aff_user->point;
+                        $new_point_with_aff = $aff_points + $aff_reward;
+                        $aff_user->point = $new_point_with_aff;
+                        $aff_user->save();
+
+                        $affPromoteCharge = $aff_reward / 100;
+
+                        // $note = 'fee for a complete subscribe action for task id #'.$taskinfo->id. ' and completed user '.Auth::user()->name . ' ID #'.Auth::user()->id;
+                    
+                        $transaction = new Transactions;
+                        $transaction->type = 'debit';
+                        $transaction->user = 0;
+                        $transaction->role = 'affiliate';
+                        $transaction->balance = 0;
+                        $transaction->paid = -abs($affPromoteCharge);
+                        $transaction->new_balance = 0;
+                        $transaction->method = 'fee';
+                        // $transaction->note = $note;
+                        $transaction->status = 1;
+                        $transaction->save();
+
+                    }
+
+
+                    $orderUpdate->save();
+
+
+                    if ($taskinfo->product_type == "Youtube Subscribe") {
+                        $netfeeTaka = 1;
+                        $note = 'fee for a complete subscribe action for task id #'.$taskinfo->id. ' and completed user '.Auth::user()->name . ' ID #'.Auth::user()->id;
+                    
+                        $transaction = new Transactions;
+                        $transaction->type = 'credit';
+                        $transaction->user = 0;
+                        $transaction->role = 'bot';
+                        $transaction->balance = 0;
+                        $transaction->paid = $netfeeTaka;
+                        $transaction->new_balance = 0;
+                        $transaction->method = 'fee';
+                        $transaction->note = $note;
+                        $transaction->status = 1;
+                        $transaction->save();
+                    }
+                    
+                    $message = ['type'=>'success','message'=>'Task has been completed and verified successfully, '.$reward_amount.' point has added to your account.'];
 
                     Session::flash('message',$message);
                     return redirect(url('/dotasks'));
 
 
                 }else{
+
+
+
+                    if (time()>$approve_time) {
+                        if ($taskinfo->product_type == "Youtube Subscribe") {
+                            $s_task = Products::findOrFail($taskinfo->id);
+                            $s_task->status = 0;
+                            $s_task->save();
+                        }
+                    }
+
+                    
                     $message = ['type'=>'error','message'=>'There is an error during completing the task.'];
                     Session::flash('message',$message);
                     return redirect(url('/dotasks'));
@@ -735,23 +1016,111 @@ class UsersController extends Controller
 
             }
 
-            $tasks = DB::table('products')
-            ->where('status',0)
-            ->where('user','!=',Auth::user()->id)
-            ->get();
+            $last_orders = Orders::where('price','>',0)->where('user',Auth::user()->id)->orderBy('created_at','DESC')->take(5)->get();
 
-            foreach($tasks as $task){
-                $order = Orders::whereRaw('DATE(created_at) = ?', [Carbon::now()->format('Y-m-d')] )->where('user',Auth::user()->id)->where('product',$task->id)->get();
-                // $order = Orders::where('user',Auth::user()->id)->where('product',$task->id)->get();
-                if($order->count() == 0){
-                    $data['task_count'] = 1;
-                    $data['task'] = $task;
-                    continue;
+            $the_type = 'Youtube Video';
 
-                    // return $task->id;
+            foreach($last_orders as $key=>$last_order){
+                if($last_order->task_type == "Youtube Subscribe"){
+                    // continue;
+                    break;
+                }elseif($last_order->task_type == "Youtube Video"){
+                    
+                    if($key==4){
+                        $the_type = "Youtube Subscribe";
+                    }
+
+
                 }
+
+            }
+            
+
+
+            // return $notIn;
+
+
+
+            $noVPNList = ['BD','IN'];
+            $vpnList = ['US','CA'];
+            
+            if(in_array($getcountryCode, $vpnList)){
+
+                
+                $notIn = [];
+
+                $done_orders = Orders::whereRaw('DATE(created_at) = ?', [Carbon::now()->format('Y-m-d')])->where('user', Auth::user()->id)->where('task_type', '!=', 'Youtube Subscribe')->get();
+        
+                foreach($done_orders as $the_type_order){
+                    array_push($notIn,$the_type_order->product);
+                }
+
+                $tasks = DB::table('products')
+                ->whereNotIn('id', $notIn)
+                ->where('status',0)
+                ->where('product_type','Do VPN Task')
+                ->where('user','!=',Auth::user()->id)
+                ->inRandomOrder()
+                ->get();
+                
+            }else{
+
+
+
+                $notIn = [];
+                if($the_type == 'Youtube Subscribe'){
+                    $done_orders = Orders::where('user',Auth::user()->id)->where('task_type',$the_type)->get();
+                }else{
+                    $done_orders = Orders::whereRaw('DATE(created_at) = ?', [Carbon::now()->format('Y-m-d')])->where('user', Auth::user()->id)->where('task_type', $the_type)->get();
+                }
+                foreach($done_orders as $the_type_order){
+                    array_push($notIn,$the_type_order->product);
+                }
+
+                $tasks = DB::table('products')
+                ->whereNotIn('id', $notIn)
+                ->where('status',0)
+                ->where('product_type',$the_type)
+                ->where('user','!=',Auth::user()->id)
+                ->inRandomOrder()
+                ->get();
+
+
             }
 
+            
+            
+            // back to the pavilon if not exists any subscription task
+            if($tasks->count() == 0 && $the_type == 'Youtube Subscribe'){
+
+                $done_orders = Orders::whereRaw('DATE(created_at) = ?', [Carbon::now()->format('Y-m-d')])->where('user', Auth::user()->id)->where('task_type', 'Youtube Video')->get();
+                foreach($done_orders as $the_type_order){
+                    array_push($notIn,$the_type_order->product);
+                }
+
+                $tasks = DB::table('products')
+                ->whereNotIn('id', $notIn)
+                ->where('status',0)
+                ->where('product_type','Youtube Video')
+                ->where('user','!=',Auth::user()->id)
+                ->inRandomOrder()
+            ->get();
+            
+        }
+
+        if($request->has('rid') && Auth::user()->role == 'superadmin'){
+            $rid = $request->rid;
+            $tasks = DB::table('products')
+            ->where('id',$rid)
+            ->get();
+        }
+
+        if($tasks->count() > 0){
+
+            $data['task_count'] = 1;
+            $data['task'] = $tasks[0];
+        }
+        
             if($request->has('task') && $data['task_count']>0){
 
 
@@ -769,11 +1138,18 @@ class UsersController extends Controller
 
             }
 
-            if (!$this->canaccess()) {
-                $data['err_message'] = '<div class="alert alert-danger">You will not get task without google chrome and windows/android.</div>';
-                $data['task_count'] = 0;
-                $message = ['message' => 'You will not get task without google chrome and android.'];
-                return response()->json($message);
+            if ($_SERVER['HTTP_HOST'] != '127.0.0.1:8000') {
+                if (!$this->canaccess()) {
+                    // $data['err_message'] = '<div class="alert alert-danger">You will not get task without google chrome and windows/android.</div>';
+                    // $data['task_count'] = 0;
+                    // $message = ['message' => 'You will not get task without google chrome and android.'];
+
+                    $title = 'Unauthorize Access';
+                    $message = 'You will not get task without google chrome and android.';
+                    return view('error',compact(['title','message']));
+
+                    // return response()->json($message);
+                }
             }
 
 
@@ -788,6 +1164,7 @@ class UsersController extends Controller
         return view('website.user.newtask')->withData($data);
     }
 
+
     public function storetask(Request $request){
 
         
@@ -801,6 +1178,7 @@ class UsersController extends Controller
             'budget'      =>  'required|numeric|min:1000',
             'netfee'      =>  'required|numeric|min:50',
             'preview_url'      =>  'required',
+            'video_id'      =>  'required',
         ]);
 
         $name = $request->name;
@@ -812,9 +1190,37 @@ class UsersController extends Controller
         $budget = $request->budget;
         $getnetfee = $request->netfee;
         $preview_url = $request->preview_url;
-        $description = $request->description;
+        $video_id = $request->video_id;
+
         $netfee = ($budget / 100) * 5;
-        $duration = $price*6;
+
+        if($type == 'Do VPN Task'){
+
+            $duration = $price*3;
+        }else{
+
+            $duration = $price*6;
+        }
+
+
+        if(substr_count($preview_url,'https://') == 0){
+            
+            $message = ['type'=>'error','message'=>'Please provide a valid video URL.'];
+        
+            Session::flash('message',$message); 
+            return redirect()->back();
+
+        }
+
+        if (substr_count($preview_url, 'youtube.com/watch?v=') == 0 && substr_count($preview_url, 'youtu.be/') == 0 && substr_count($preview_url, 'facebook.com/watch/?v=') == 0 ) {
+            $message = ['type'=>'error','message'=>'Please provide a valid video URL.'];
+    
+            Session::flash('message', $message);
+            return redirect()->back();
+        }
+
+
+
 
         $available_point = Auth::user()->point - $netfee;
 
@@ -827,6 +1233,37 @@ class UsersController extends Controller
 
         }
 
+
+        if($type == 'Youtube Subscribe'){
+            $channel_url = $request->channel_url;
+
+            if (substr_count($channel_url, 'youtube.com/channel/') == 0) {
+                $message = ['type'=>'error','message'=>'Please provide a valid channel URL.'];
+        
+                Session::flash('message', $message);
+                return redirect()->back();
+            } 
+
+            $api_endpoint = $this->channel_data($request->channel_id);
+            $result = $api_endpoint->original['result'];
+
+            if($result == 'error'){
+                $message = ['type'=>'error','message'=>$api_endpoint->original['message']];
+                Session::flash('message',$message); 
+                return redirect()->back();
+            }
+
+            $price = 200;
+            $duration = 120;
+
+        }
+
+        if($type == "Facebook Video"){
+            $video_url = 'https://www.facebook.com/watch/?v='.$video_id;
+        }else{
+            $video_url = 'https://www.youtube.com/watch?v='.$video_id;
+        }
+
         $newtask = new Products;
         $newtask->name = $name;
         $newtask->category = $category;
@@ -834,10 +1271,14 @@ class UsersController extends Controller
         $newtask->product_type = $type;
         $newtask->price = $price;
         $newtask->duration = $duration;
-        $newtask->preview_url = $preview_url;
+        $newtask->preview_url = $video_url;
         $newtask->checkout_type = 'newwindow';
         $newtask->budget = $budget;
-        $newtask->description = $description;
+
+        if($request->channel_id!=""){
+            $newtask->channel_id = $request->channel_id;
+        }
+
         $newtask->user = Auth::user()->id;
         $newtask->save();
 
@@ -873,15 +1314,164 @@ class UsersController extends Controller
 
 
     }
-    public function edittask($id){
+
+    public function set_status($id,$status){
         $data['categories'] = Categories::get();
+        $data['task'] = $task = Products::findOrFail($id);
+
+        if(Auth::user()->id != $task->user){
+
+            $message = ['type'=>'error','message'=>'You are not authorize to access this page.'];
+            Session::flash('message',$message); 
+            return redirect(url('mytasks'));
+        }
+
+        $statuses = [0,1,2];
+
+        if(!in_array($status,$statuses)){
+
+            
+            $message = ['type'=>'error','message'=>'You are not authorize to access this page.'];
+            Session::flash('message',$message); 
+            return redirect(url('mytasks'));
+
+        }
+
+        $task->status = $status;
+        if($status==2){
+            $budget = $task->budget;
+            $remain = $budget - $task->amount_sold;
+
+            //
+            $task->budget = $task->amount_sold;
+
+            // now refund points
+            $newPoints = Auth::user()->point + $remain;
+            $user = Users::findOrFail(Auth::user()->id);
+            $user->point = $newPoints;
+            $user->save();
+
+
+
+        }
+        $task->save();
+           
+        $message = ['type'=>'success','message'=>'Task has updated successfully'];
+        Session::flash('message',$message); 
+        return redirect(url('mytasks'));
+
+
+    }
+
+    public function mytask_edit($id){
+        $data['categories'] = Categories::get();
+        $data['task'] = $task = Products::findOrFail($id);
+
+        if(Auth::user()->id != $task->user){
+
+            $message = ['type'=>'error','message'=>'You are not authorize to access this page.'];
+            Session::flash('message',$message); 
+            return redirect(url('mytasks'));
+        }
+
         return view('website.user.newtask_edit')->withData($data);
+    }
+
+    public function mytask_update(Request $request, $id){
+
+        $task = Products::findOrFail($id);
+        
+        if(Auth::user()->id != $task->user){
+
+            $message = ['type'=>'error','message'=>'You are not authorize to access this page.'];
+            Session::flash('message',$message); 
+            return redirect(url('downloads'));
+        }
+        
+        $this->validate($request, [
+            'budget'      =>  'required|numeric|min:100',
+            'new_budget'      =>  'required|numeric|min:10',
+        ]);
+
+
+        $budget = $request->budget;
+        $getnetfee = $request->netfee;
+        $new_budget = $request->new_budget;
+        $netfee = ($budget / 100) * 5;
+
+        $available_point = Auth::user()->point - $netfee;
+
+        if($available_point<$budget){
+
+            $message = ['type'=>'error','message'=>'You don\'t have enough points, your budget is '.$budget.' and your available point is '.$available_point. ' after netword free for this budget. Please add point and try again for publish the task.'];
+        
+            Session::flash('message',$message); 
+            return redirect()->back();
+
+        }
+
+
+        
+        if($task->status>2){
+
+            $message = ['type'=>'error','message'=>'You don\'t have enough permission to run this task, or your task has declined from review team.'];
+        
+            Session::flash('message',$message); 
+            return redirect()->back();
+
+        }
+
+        // update task budget
+
+        $new_budget = $task->budget + $budget;
+        $task->budget = $new_budget;
+        $task->status = 0;
+        $task->save();
+
+        
+        // now cut off the points from user account //
+
+        $oldPoint = Auth::user()->point;
+        $newPoint = $oldPoint-$budget-$netfee;
+        $user = Users::findOrFail(Auth::user()->id);
+        $user->point = $newPoint;
+        $user->save();
+
+        // now cut off the netfee for the user
+
+
+        $netfeeTaka = $netfee/100;
+
+        
+        $transaction = new Transactions;
+        $transaction->type = 'debit';
+        $transaction->user = Auth::user()->id;
+        $transaction->role = Auth::user()->role;
+        $transaction->balance = Auth::user()->balance;
+        $transaction->paid = $netfeeTaka;
+        $transaction->new_balance = Auth::user()->balance;
+        $transaction->method = 'fee';
+        $transaction->status = 1;
+        $transaction->save();
+
+        $message = ['type'=>'success','message'=>'Your campaign budget has been updated successfully.'];
+        Session::flash('message',$message); 
+        return redirect('mytasks');
+
     }
 
     public function mytask(){
 
-        $tasks = Products::where('user', Auth::user()->id)->paginate(5);
+        $tasks = Products::where('user', Auth::user()->id)->paginate(10);
         return view('website.user.mytask', compact(['tasks']));
+    }
+
+    
+    public function payments(){
+
+        $payments = Transactions::where('user', Auth::user()->id)->where('type','credit')->paginate(10);
+
+        return view('website.user.payments', compact(['payments']));
     }
 
     public function mytask_details($id){
@@ -921,6 +1511,7 @@ class UsersController extends Controller
 
             $deposit_amount = $deposit['amount'];
             $from_number = $deposit['from_number'];
+            $trxid = $deposit['trxid'];
 
 
             
@@ -931,7 +1522,7 @@ class UsersController extends Controller
             $transaction->role = Auth::user()->role;
             $transaction->balance = 0;
             $transaction->paid = $deposit_amount;
-            $transaction->note = $from_number;
+            $transaction->note = $from_number . ' TrxID # '.$trxid;
             $transaction->new_balance = 0;
             $transaction->method = $deposit['type'];
             $transaction->status = 0;
@@ -1020,84 +1611,68 @@ class UsersController extends Controller
     }
 
 
-    public function scrap($url)	{
-        $curl = curl_init($url);
-    
-        curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-        curl_setopt($curl, CURLOPT_FAILONERROR, true);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    
-        $html = curl_exec($curl);
-        curl_close($curl);
-    
-        return $html;
-    } 
 
     function go($id){
 
-        $ipdata = Session::put('ip');
-        $ip = request()->ip();
 
-        if(is_null($ipdata) || $ipdata!=$ip){
-
-            $location_URL = 'http://ip-api.com/json/'. $ip;
-            $location_JSON = json_decode($this->scrap($location_URL));
-            if ($location_JSON->status == 'success') {
-                if($location_JSON->countryCode == "BD"){
-                    Session::put('ip', $ip);
-                    if(Auth::check()){
-                        $ipc = Iptables::where('ip',$ip)->where('browser',$_SERVER['HTTP_USER_AGENT'])->get();
-
-                        if($ipc->count() >0 ){
-                            $ipdbinfo = $ipc[0];
-                            if($ipdbinfo->user != Auth::user()->id){
-                                $msg = ['message'=>'Multiple user login prohabited!'];
-                                return response()->json($msg);               
-                            }
-                        }else{
-                            $ips = new Iptables;
-                            $ips->user = Auth::user()->id;
-                            $ips->ip = $ip;
-                            $ips->browser = $_SERVER['HTTP_USER_AGENT'];
-                            $ips->save();
-                        }
-                    }
-                }else{
-                    $msg = ['message'=>'You can\'t access this page without accepted country!'];
-                    return response()->json($msg);
-                }
-            }
-
-        }
-                
         $message = ['message'=>'you can\'t access this page without google chrome and windows'];
-        // if (Auth::check() && Auth::user()->role != 'superadmin') {
-            if (!$this->canaccess()) {
-                return response()->json($message);
-            }
-        // }
-
-        
-        
+        if (!$this->canaccess()) {
+            $title = 'Unauthorize Access';
+            $message = 'You will not get task without google chrome and android.';
+            return view('error',compact(['title','message']));
+        }
+ 
         $product = Products::findOrFail($id);
+
+        $getcountryCode = Session::get('country');
+
+        $noVPNList = ['BD','IN'];
+        $vpnList = ['US','CA'];
+
+            if($product->product_type=='Do VPN Task'){
+
+                if (!in_array($getcountryCode, $vpnList)) {
+                $msg = ['message'=>'You can\'t access this page without accepted country!'];
+                return response()->json($msg);
+                }
+        
+            }
+        
         
         $time = time() + $product->duration;
         Session::put('claim_time', $time);
+
+
         
         $url = $product->preview_url;
         if(strtolower($product->product_type) == "website"){
             $url = $product->preview_url.'/?t='.time().'-'.$product->id.'-'.$product->duration.'-'.$product->page_visit.'-'.Auth::user()->id.'-'.uniqid();
+        }elseif(strtolower($product->product_type) == "youtube subscribe"){
+
+
+            $api_endpoint = $this->channel_data($product->channel_id);
+            $subscriber = $api_endpoint->original['subscriber'];
+
+            Session::put('init_subscriber', $subscriber);
+
+            $product->status = 10;
+            $product->save();
+            // return [$result];
+
         }
 
-        $redirects = [
+        if ($product->product_type !='Facebook Video') {
+            $redirects = [
             'https://l.facebook.com/l.php?u={{url}}&h=AT1-OV-4JrWXzyWFkFUcN4UrMWv_bd3yhUaHhHWIDBsmK-yGiKx1pqhPv7c8C_0w6-KmZp62rCFiWlT5UbHoWAPXub8hccUkjdlCxvXCKQUwLeGGt7Bsk-SF0bYo3f-fYDAaYw',
             'https://l.instagram.com/?u={{url}}&e=ATMXunKIbWatQDPPCyEjFnoR-EcI0E0SuZBpAt3KY_ERtu1-f_qucbKI6r2pLaDaAFr8MakjDvO3EUQgqTtToQ&s=1'
         ];
-        shuffle($redirects);
+            shuffle($redirects);
         
-        $social = $redirects[0];
-        $go_url = str_replace('{{url}}',urlencode($url),$social);
+            $social = $redirects[0];
+            $go_url = str_replace('{{url}}', urlencode($url), $social);
+        }else{
+            $go_url = $url;
+        }
         return redirect($go_url);
         
     }
@@ -1192,7 +1767,14 @@ class UsersController extends Controller
 
     }
 
-    public function withdrawrequest(){
+        
+    public function withdraw(){
+        return view('website.user.withdraw');
+    }
+
+
+
+    public function withdrawrequest(Request $request){
 
 
 
@@ -1204,6 +1786,26 @@ class UsersController extends Controller
             return redirect()->back();
         }
 
+
+               
+        $this->validate($request,[
+            'type'      =>  'required',
+            'to_number'      =>  'required|numeric',
+            'amount'      =>  'required|numeric'
+        ]);
+
+
+        $type  = $request->type;
+        $amount = $request->amount;
+        $to_number = $request->to_number;
+
+        if(Auth::user()->balance<$amount){
+            
+            $message = ['type'=>'error','message'=>'You don\'t have enoght balance to make this payment request.'];
+    
+            Session::flash('message',$message);  
+            return redirect()->back();
+        }
 
 
         $findExisitngInvoice = Invoices::where('user',Auth::user()->id)->where('status',0)->get();
@@ -1217,8 +1819,9 @@ class UsersController extends Controller
 
         $invoice = new Invoices;
         $invoice->user = Auth::user()->id;
-        $invoice->total = Auth::user()->balance;
+        $invoice->total = $amount;
         $invoice->payment_type = 'withdraw';
+        $invoice->sale_tracking = $type .' to '.$to_number;
         $invoice->save();
 
 

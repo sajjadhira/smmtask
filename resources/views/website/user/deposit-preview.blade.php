@@ -33,7 +33,7 @@
                         @php
                             $purchased = \App\Orders::where('user',Auth::user()->id)->get()->count()
                         @endphp
-						<div class="purchased-total"><span class="text-muted">Purchased</span> {{$purchased}} {{__("Item")}}@if($purchased>1){{__("s")}}@endif</div>
+						<div class="purchased-total"><span class="text-muted">Completed Task</span> {{$purchased}} {{__("Item")}}@if($purchased>1){{__("s")}}@endif</div>
 					</div>
 				</div>
 
@@ -48,7 +48,7 @@
                         @endphp
    
                         <!-- Step 1 -->
-                        <h3 class="text-center"> Deposit Preview</h3>
+                        <h3 class="text-center">Buy Preview</h3>
                         <br/>
                         <br/>
                         <br/>
@@ -70,13 +70,24 @@
                                 <div class="col-md-6 text-a-left preview-pane">
                                     <strong>{{ucfirst($deposit["from_number"])}}</strong>
                                 </div>
-    
+   
                                 <div class="col-md-6 preview-pane">
                                     Amount:
                                 </div>
                                 <div class="col-md-6 text-a-left preview-pane">
                                     <strong><span class="data-default-currency"></span>{{ucfirst($deposit["amount"])}}</strong>
                                 </div>
+
+ 
+    
+    
+                                <div class="col-md-6 preview-pane">
+                                    Transaction ID:
+                                </div>
+                                <div class="col-md-6 text-a-left preview-pane">
+                                    <strong>{{ucfirst($deposit["trxid"])}}</strong>
+                                </div>
+    
     
                                 <div class="col-md-6 preview-pane">
                                     Points:
@@ -87,7 +98,7 @@
 
                                 <div class="col-md-6 offset-md-3 text-center preview-pane">
                                     <div class="form-group">
-                                        <a href="{{url('deposit-confirm')}}"><button type="button" class="btn btn-transform-primary">Confirm Deposit Now</button></a>
+                                        <a href="{{url('deposit-confirm')}}"><button type="button" class="btn btn-transform-primary">Confirm Buy Now</button></a>
                                     </div>
                                     </div>
     

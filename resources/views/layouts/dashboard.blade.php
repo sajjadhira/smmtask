@@ -217,7 +217,7 @@
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{url('settings')}}">
               <span data-feather="settings"></span>
               <span class="nav-link-text">Settings</span>
             </a>
@@ -235,29 +235,38 @@
 
         <ul class="nav flex-column mb-2">
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{url('dashboard/report/this-month')}}">
               <span data-feather="file-text"></span>
               <span class="nav-link-text">Current month</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{url('dashboard/report/last-month')}}">
               <span data-feather="file-text"></span>
-              <span class="nav-link-text">Last quarter</span>
+              <span class="nav-link-text">Last Month</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{url('dashboard/report/this-year')}}">
               <span data-feather="file-text"></span>
-              <span class="nav-link-text">Social engagement</span>
+              <span class="nav-link-text">This Year</span>
             </a>
           </li>
+ 
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{url('dashboard/report/last-year')}}">
               <span data-feather="file-text"></span>
-              <span class="nav-link-text">Year-end sale</span>
+              <span class="nav-link-text">Last Year</span>
             </a>
           </li>
+ 
+          <li class="nav-item">
+            <a class="nav-link" href="{{url('dashboard/reports')}}">
+              <span data-feather="file-text"></span>
+              <span class="nav-link-text">All Reports</span>
+            </a>
+          </li>
+ 
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{url('/')}}">

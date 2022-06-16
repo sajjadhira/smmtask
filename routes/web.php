@@ -46,6 +46,9 @@ Route::get('contact-us', 'HomeController@contact_us');
 Route::get('terms-and-conditions', 'HomeController@tos');
 Route::get('privacy-policy', 'HomeController@privacy');
 
+Route::get('reffer/{id}', 'HomeController@reffer');
+Route::get('task/skip/{id}', 'UsersController@skipTask');
+
 
 Route::get('task.js', 'UsersController@info');
 
@@ -61,16 +64,22 @@ Route::get('product/add-cart/{id}/{license}', 'HomeController@addToCart');
 Route::get('convert', 'UsersController@convertpoints');
 Route::patch('user/convert/point/submit', 'UsersController@convertaction');
 
-Route::get('withdraw', 'UsersController@withdrawrequest');
+Route::get('withdraw', 'UsersController@withdraw');
+Route::patch('withdraw-submit', 'UsersController@withdrawrequest');
 Route::get('payment-method', 'UsersController@paymentmethod');
 Route::patch('payment-method/update', 'UsersController@paymentmethodsave');
 
 // publish task
+Route::get('get/channel/information', 'UsersController@channel_info');
 
-Route::get('dotasks', 'UsersController@dotask');
+Route::get('dotasks', 'UsersController@dotask')->middleware('verified');
 Route::get('mytasks', 'UsersController@mytask');
 Route::get('newtask', 'UsersController@newtask');
+Route::get('payments', 'UsersController@payments');
 Route::patch('newtask/store', 'UsersController@storetask');
+Route::get('mytasks/edit/{id}', 'UsersController@mytask_edit');
+Route::patch('mytasks/update/{id}', 'UsersController@mytask_update');
+Route::get('mytasks/status/{id}/{code}', 'UsersController@set_status');
 // go to task
 
 Route::get('go/task/{id}', 'UsersController@go');

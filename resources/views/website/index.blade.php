@@ -39,37 +39,104 @@
 <div class="software">
 	<section class="container" id="software">
 		<div class="container-fluid">
-			<h2 class="section-title mb-2 h1"><span class="brand-color">Available</span> Task ({{$data['task_count']}})</h2>
+
 	
 	<div class="row text-center">
 	
-
-
-		
-	
-		<div class="col-xs-12 col-sm-12 col-md-12">            
-	
-			@guest
-
-			<div class="alert alert-info">No available task for guest user. Plese login for do some task and earn money.</div>
+		<div class="col-xs-12 col-sm-12 col-md-12">   
 			
-			@else			   
-			
-			<div class="text-center">
-				<a href="{{url('dotasks')}}" onclick="return confirm('Are you sure your are using google chrome over android devoice?');">
-					<button class="btn btn-primary">Start Earning Money by Doing Task</button>
-				</a>
+			<div class="accordion accordion-flush" id="accordionFlushExample">
+				<div class="accordion-item">
+				  <h2 class="accordion-header" id="flush-headingOne">
+					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+					  আপনি কি সহজেই অনলাইন থেকে টাকা ইনকাম করতে চান? তাহলে এখানে ক্লিক করুন।
+					</button>
+				  </h2>
+				  <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+					<div class="accordion-body">
+						<p>
+						আমাদের সাইটে ইউটিউব/ফেসবুক ভিডিও দেখে এবং ইউটিউব চ্যানেলে সাবস্ক্রাইব করে খুব সহজেই আপনি প্রতিদিন ভালো পরিমানের টাকা ইনকাম করতে পারবেন। আপনার মেনু থেকে 
+						<a class="dropdown-toggle fw-bold" href="#" id="userNav" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none">
+							<i class="fa fa-user-circle" aria-hidden="true"></i>  User Menu
+						</a>
+
+						মেনুতে ক্লিক করলে সকল কিছু পাবেন।
+						</p>
+						<div class="alert alert-info text-center">কাজ শুরু করার পূর্বে ভিডিও টিউটোরিয়ালটি সম্পূর্ণ মনোযোগ দিয়ে দেখে নিন</div>
+
+						<div class="text-center">
+							<a href="https://l.facebook.com/l.php?u=https://www.youtube.com/watch?v=J9wSFQDOHRo&h=AT1-OV-4JrWXzyWFkFUcN4UrMWv_bd3yhUaHhHWIDBsmK-yGiKx1pqhPv7c8C_0w6-KmZp62rCFiWlT5UbHoWAPXub8hccUkjdlCxvXCKQUwLeGGt7Bsk-SF0bYo3f-fYDAaYw" target="_blank"><img class="img-fluid" src="{{url('images/smmtask-tutorial.jpg')}}"></a>
+						</div>
+					</div>
+				  </div>
+				</div>
+				<div class="accordion-item">
+				  <h2 class="accordion-header" id="flush-headingTwo">
+					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+					  আপনি কি আপনার ইউটিউব চ্যানেলের ওয়াচটাইম/সাবস্ক্রাইবার বাড়াতে চান? তাহলে এখানে ক্লিক করুন।
+					</button>
+				  </h2>
+				  <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+					<div class="accordion-body">
+						<p>
+							আপনি খুব সহজেই ১০০% অথেন্টিক ওয়াচটাইম / সাবস্ক্রাইবার নিতে পারেন আমাদের প্লাটফর্মের মাধ্যমে, আমাদের রয়েছে অসংখ্য ইউজার যারা আপনার ভিডিও দেখবে এবং তারা এটা থেকে রিওয়ার্ড পয়েন্ট অর্জন করবে।
+							যার ফলে আপনি পেয়ে যাবেন ভালো মানের ওয়াচটাইম এবং ১০০% অথেন্টিক সাবস্ক্রাইবার। আপনার মেনু থেকে 
+							<a class="dropdown-toggle fw-bold" href="#" id="publisherNav" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none">
+								<i class="fa fa-bullhorn" aria-hidden="true"></i>  Publisher Menu
+							  </a>
+							  মেনুতে ক্লিক করলে সকল কিছু পাবেন।
+						</p>
+					</div>
+				  </div>
+				</div>
+
+			  </div>
+	
+
+		</div>
+
+
+		<div class="col-xs-12 col-sm-12 col-md-12 mt-3">   
+			<h3 class="text-center">সর্বশেষ পেমেন্ট</h3>
+
+
+			<div class="table-responsive">
+				<table class="table table-striped">
+					<thead>
+						<th>নাম</th>
+						<th>পেমেন্ট এমাউন্ট</th>
+						<th>পেমেন্ট মাধ্যম</th>
+						<th>সময়</th>
+					</thead>
+
+					<tbody>
+						@foreach ($data['orders'] as $order)
+
+						@php
+							$order_details_explode = explode('to',$order->sale_tracking);
+							$type = trim($order_details_explode[0]);
+							$account = trim($order_details_explode[1]);
+						@endphp
+						<tr>
+							<td>{{\App\Users::find($order->user)->name}}</td>
+							<td>&#2547;{{$order->total}}</td>
+							<td>{{ucfirst($type)}}</td>
+							<td>{{date('d/m/Y h:i A',strtotime($order->updated_at))}}</td>
+						  </tr>          
+						@endforeach
+
+					</tbody>
+
+
+				</table>
+				<div class="text-center">
+					{{$data['orders']}}
+				</div>
 			</div>
 
-		   @endguest
 
-		   @php
-			   if(!is_null($data['err_message'])){
-				   echo $data['err_message'];
-			   }
-		   @endphp
 
-		   </div>
+		</div>
 		   
 
 		
