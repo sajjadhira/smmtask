@@ -50,7 +50,13 @@
 								</label>
 							  </div>
 							  <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-							  <p class="mt-5 mb-3 text-muted">Forgot password? <a href="{{url('password/reset')}}">reset here</a>. Do not have account? <a href="{{url('register')}}">create new</a></p>
+							  {{-- <p class="mt-5 mb-3 text-muted">Forgot password? <a href="{{url('password/reset')}}">reset here</a>. Do not have account? <a href="{{url('register')}}">create new</a></p> --}}
+							  <p class="mt-5 mb-3 text-muted">
+								  পাসওয়ার্ড ভুলে গেলে আপনার রেজিস্টার্ড ইমেইল এড্রেস থেকে যোগাযোগ করুন - <br/>
+								  <ul>
+									  <li>ইমেইল এড্রেস - <a href="mailto:smmcreatorbd@gmail.com" target="_blank">এখানে ক্লিক করুন</a></li>
+								  </ul>
+							  </p>
 
                               @csrf
 							</form>

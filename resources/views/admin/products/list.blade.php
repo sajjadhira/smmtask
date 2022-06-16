@@ -50,6 +50,7 @@
                             <th>PPA</th>
                             <th>Budget</th>
                             <th>Budget Reached</th>
+                            <th>Status</th>
                             <th>Action</th>
                           </tr>
                         </thead>
@@ -63,6 +64,7 @@
                                 <td>{{number_format($item->price)}} Points</td>
                                 <td>{{number_format($item->budget)}} Points</td>
                                 <td>{{number_format($item->amount_sold)}} Points</td>
+                                <td>@if($item->amount_sold > $item->budget) <span class="badge bg-danger text-white">Stopped</span> @elseif($item->amount_sold < $item->budget) <span class="badge bg-success text-white">Running</span> @elseif($item->status > 2) <span class="badge bg-warning text-white">Hold</span> @endif </td>
                                 <td><a href="{{ url('dashboard/products/edit/'.$item->id) }}"><span class="badge bg-primary text-white"><i class="feather icon-edit"></i> Update</span></a></td>
                               </tr>          
                             @endforeach

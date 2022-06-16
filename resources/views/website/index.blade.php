@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title')Do Social Media Task and Earn Money| SMMTask @endsection
+@section('title'){{__("Do Social Media Task and Earn Money")}}@endsection
 
 @section('hero')
 
@@ -44,6 +44,10 @@
 	<div class="row text-center">
 	
 		<div class="col-xs-12 col-sm-12 col-md-12">   
+
+			<div class="p-1 text-success">
+				পরবর্তিতে আমাদের সাইট সহজে পেতে <b>www.smmtask.com</b> লিংকটি মুখস্থ রাখুন অথবা সেভ করে রাখুন অথবা বুকমার্ক করে রাখুন ব্রাউজারে।
+			</div>
 			
 			<div class="accordion accordion-flush" id="accordionFlushExample">
 				<div class="accordion-item">
@@ -96,7 +100,16 @@
 		</div>
 
 
-		<div class="col-xs-12 col-sm-12 col-md-12 mt-3">   
+		<div class="col-xs-12 col-sm-12 col-md-12 mt-3">  
+			
+			@guest
+			@else
+			@if(Auth::user()->role == "superadmin")
+			<div class="text-center mt-4 mb-4">
+				আমরা এখনো পর্যন্ত সর্বমোট <strong>&#2547;{{number_format($data['paid_total'])}}</strong> টাকা ইউজারদের পেমেন্ট করেছি।
+			</div>
+			@endif
+			@endguest
 			<h3 class="text-center">সর্বশেষ পেমেন্ট</h3>
 
 
@@ -106,6 +119,7 @@
 						<th>নাম</th>
 						<th>পেমেন্ট এমাউন্ট</th>
 						<th>পেমেন্ট মাধ্যম</th>
+						<th>স্টেটাস</th>
 						<th>সময়</th>
 					</thead>
 
@@ -121,6 +135,7 @@
 							<td>{{\App\Users::find($order->user)->name}}</td>
 							<td>&#2547;{{$order->total}}</td>
 							<td>{{ucfirst($type)}}</td>
+							<td>@if($order->status==0) <span class="text-warning">Checking</span> @elseif($order->status == 1) <span class="text-success">Approved</span> @else <span class="text-danger">Refunded</span> @endif</td>
 							<td>{{date('d/m/Y h:i A',strtotime($order->updated_at))}}</td>
 						  </tr>          
 						@endforeach

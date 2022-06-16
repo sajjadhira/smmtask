@@ -69,6 +69,7 @@
                                 <td>
                                   @if($order->status==0)
                                   <a href="{{url('dashboard/payment/confirm/'.$order->id)}}"  onclick="return confirm('Are you sure, you sent the payment to the user?')"><button class="btn btn-primary">Make Payment</button></a>
+                                  <a href="{{url('dashboard/payment/decline/'.$order->id)}}"  onclick="return confirm('Are you sure, decline the request?')"><button class="btn btn-danger">Decline Payment</button></a>
                                   @endif
                                 </td>
                               </tr>          

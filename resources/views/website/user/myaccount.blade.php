@@ -31,10 +31,17 @@
 					<div class="col-6 text-a-right wallet-information">
 						<div class="account-balance"><span class="text-muted">Balance</span> <span class="data-default-currency"></span>{{(Auth::user()->balance)}} BDT</div>
                         @php
-                            $purchased = \App\Orders::where('user',Auth::user()->id)->get()->count()
+                            $purchased = \App\Orders::where('user',Auth::user()->id)->where('price','>',0)->get()->count()
 							@endphp
 						<div class="purchased-total"><span class="text-muted">Completed</span> {{$purchased}} {{__("Task")}}@if($purchased>1){{__("s")}}@endif</div>
 						<div class="account-balance"><span class="text-muted">Points</span> {{number_format(Auth::user()->point)}}</div>
+						@if(Auth::user()->signup_bonus == 0 && \App\Orders::where('user',Auth::user()->id)->where('price','>',0)->get()->count()<140)
+						<div class="account-balance"><span class="text-muted"><i class="fa fa-lock"></i> SignUp Bonus</span> {{number_format(1000)}} Points</div>
+						<p class="text-muted"><small>১০০ টাস্ক কমপ্লিট হওয়ার পর সাইন আপ বোনাস পয়েন্ট আপনার মূল একাউন্টে যোগ হয়ে যাবে</small></p>
+						@elseif(Auth::user()->signup_bonus == 0 && \App\Orders::where('user',Auth::user()->id)->where('price','>',0)->get()->count()<145)
+						<p class="text-success"><small>আপনি ১০০০ পয়েন্ট সাইন আপ বোনাস পেয়েছেন।</small></p>
+						@else
+						@endif
 					</div>
 
 

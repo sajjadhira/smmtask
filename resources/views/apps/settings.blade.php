@@ -48,7 +48,7 @@
                                                 <div class="row">
 
 
-                                                    <div class="col-md-12">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="notice_type">
                                                                 Announcement Type
@@ -63,12 +63,28 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-12">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="notice">
                                                                 Announcement Message
                                                             </label>
                                                             <textarea name="notice" class="form-control char-textarea" id="textarea-counter" rows="3" placeholder="Please input notice here or you can leave it empty if you don't want to display any notice...">{{$data['notice']}}</textarea>
+                                                      
+                                                        </div>
+                                                    </div>
+
+                                                    
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="website_button_color">
+                                                                Webiste Button Color
+                                                            </label>
+                                                        <select name="website_button_color" class="form-control">
+                                                            <option value="">NOT SELECTED</option>
+                                                            @foreach ($data['colors'] as $key=>$type)
+                                                            <option value="{{$key}}" @if($key==$data['website_button_color']) selected @endif>{{strtoupper($type)}}</option>
+                                                            @endforeach
+                                                        </select>
                                                       
                                                         </div>
                                                     </div>

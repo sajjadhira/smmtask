@@ -28,10 +28,26 @@
           </ul>
         </li>		 --}}
 
-		<li class="nav-item">
+        @guest
+        <li class="nav-item">
           <a aria-current="page" href="{{url('dotasks')}}"><i class="fa fa-money" aria-hidden="true"></i> Do Task</a>
-    </li>	
-  
+        </li> 
+        @else
+        <li class="nav-item dropdown">
+          <a class="dropdown-toggle" href="#" id="DoTasks" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa fa-money" aria-hidden="true"></i>  Do Task
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="DoTasks">
+            <li><a class="dropdown-item" href="{{url('dotasks/Youtube Video')}}">Youtube Video</a></li>
+            <li><a class="dropdown-item" href="{{url('dotasks/Youtube Subscribe')}}">Youtube Subscribe</a></li>
+            <li><a class="dropdown-item" href="{{url('dotasks/Youtube VPN Chrome')}}">Youtube VPN Chrome</a></li>
+            <li><a class="dropdown-item" href="{{url('dotasks/Do VPN Task')}}">Youtube VPN Firefox</a></li>
+            <li><a class="dropdown-item" href="{{url('dotasks/Website')}}">Website Worldwide</a></li>
+            <li><a class="dropdown-item" href="{{url('dotasks/Do VPN Website Task')}}">Website VPN Task</a></li>
+          </ul>
+        </li>	
+	
+        @endguest  
 
   
       </ul>
@@ -45,7 +61,7 @@
           </li>
           
             <li class="nav-item">
-            <a aria-current="page" href="{{url('register')}}"><span data-feather="log-in"></span> Register</a>
+            <a aria-current="page" href="{{url('signup')}}"><span data-feather="log-in"></span> Register</a>
           </li>
   
           

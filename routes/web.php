@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Auth;
 
 
 
-Auth::routes(['verify' => true]);
+// Auth::routes(['verify' => false]);
+Auth::routes();
 
 
 // Route::get('/', function () {
@@ -37,6 +38,8 @@ Route::get('api/category/{category}/{api}', 'HomeController@category');
 Route::get('api/product/{name}/{id}/{api}', 'HomeController@product');
 
 Route::get('/', 'HomeController@front');
+
+Route::get('/signup', 'HomeController@signup')->name('signup');
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('sitemap.xml', 'DashboardController@index');
@@ -73,6 +76,7 @@ Route::patch('payment-method/update', 'UsersController@paymentmethodsave');
 Route::get('get/channel/information', 'UsersController@channel_info');
 
 Route::get('dotasks', 'UsersController@dotask')->middleware('verified');
+Route::get('dotasks/{type}', 'UsersController@dotask')->middleware('verified');
 Route::get('mytasks', 'UsersController@mytask');
 Route::get('newtask', 'UsersController@newtask');
 Route::get('payments', 'UsersController@payments');
@@ -83,6 +87,8 @@ Route::get('mytasks/status/{id}/{code}', 'UsersController@set_status');
 // go to task
 
 Route::get('go/task/{id}', 'UsersController@go');
+Route::get('track/verify', 'HomeController@track_verify');
+Route::post('track/{rand}', 'HomeController@track');
 
 // cart list
 Route::get('cart', 'HomeController@cart');
@@ -120,6 +126,8 @@ Route::get('downloads', 'UsersController@downloads');
 Route::get('my-items', 'UsersController@downloads');
 Route::get('downloads/item/{license}', 'UsersController@downloads_item');
 
+Route::get('unauthorize-ua', 'UsersController@unauthorize_ua');
+
 Route::get('dashboard/reports', 'ReportingController@index');
 
 
@@ -139,6 +147,7 @@ Route::get('dashboard/invoices', 'InvoicesController@orders');
 Route::get('dashboard/invoices/edit/{id}', 'InvoicesController@orders_edit');
 Route::patch('dashboard/invoices/update/{id}', 'InvoicesController@order_update');
 Route::get('dashboard/payment/confirm/{id}', 'InvoicesController@payment_done');
+Route::get('dashboard/payment/decline/{id}', 'InvoicesController@payment_undone');
 
 Route::get('dashboard/delivery-agents', 'DeliveryagentsController@index');
 Route::get('dashboard/delivery-agents/create', 'DeliveryagentsController@create');

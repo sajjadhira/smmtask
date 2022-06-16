@@ -102,14 +102,15 @@
                             </select>
                             </div>
                             <br/>
-                            <br/>
                             </div>
 
 
                             @php
-                                $types = ['Youtube Video', 'Youtube Subscribe', 'Facebook Video', 'Website'];
+                                $types = ['Youtube Video', 'Youtube Subscribe', 'Website'];
                                 if(Auth::user()->role == "superadmin"){
                                     array_push($types,'Do VPN Task');
+                                    array_push($types,'Youtube VPN Chrome');
+                                    array_push($types,'Do VPN Website Task');
                                 }
                             @endphp
                             <div class="col-md-6">
@@ -123,10 +124,32 @@
                             </select>
                             </div>
                             <br/>
-                            <br/>
-                            </div>
+                        </div>
+                        
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                    <label for="question">Question</label>
+                                    <input class="form-control" id="question" type="text" name="question" placeholder="Verification Question">
+                                </div>
+                                
+                                <br/>
+                                <br/>
+                                </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="answer">Answer</label>
+                                    <input class="form-control" id="answer" type="text" name="answer" placeholder="Verification Answer">
+                                </div>
+                                
+                                <br/>
+                                <br/>
+                                </div>
 
                         </div>
+
+            
 
                     </fieldset>
 
@@ -152,6 +175,15 @@
                                 <label for="code">Channel URL*</label>
                                 <input class="form-control" id="channel_url" type="text" name="channel_url" placeholder="https://www.youtube.com/channel/UCD9vlEA-5Xich1RWjq6d6UQ" value="">
                                 <input id="channel_id" type="hidden" name="channel_id">
+                            </div>
+                            <br/>
+                            <br/>
+                        </div>
+                        
+                        <div class="col-md-6 d-none" id="page_visit_section">
+                            <div class="form-group">
+                                <label for="page_visit">Total Page Visit*</label>
+                                <input class="form-control" id="page_visit" type="text" name="page_visit" placeholder="3 or 4 or 5" value="0">
                             </div>
                             <br/>
                             <br/>
@@ -273,7 +305,13 @@
                 const points = $(this).val()
                 let taskType = $('#type').val();
                 if(taskType == 'Do VPN Task'){
-                    var sec = points * 3
+                    var sec = points * 4
+                }else if(taskType == 'Youtube VPN Chrome'){
+                    var sec = points * 5
+                }else if(taskType == 'Website'){
+                    var sec = 10
+                }else if(taskType == 'Do VPN Website Task'){
+                    var sec = 10
                 }else{
                     var sec = points * 6
                 }
@@ -291,6 +329,10 @@
         $("#preview_url").on('focusout', function(){
                 const url = $(this).val()
                 let type = $("#type").val();
+
+                if(type != 'Website' && type != 'Do VPN Website Task'){
+
+
                 if(url.indexOf('https://') == -1){
                     let verr = '<div class="alert alert-danger pt-3">Please provide a valid video URL.</div>';
                     $('#err_message').slideDown('fast').html(verr);
@@ -355,6 +397,13 @@
                 
                     
                 }
+
+            }else{
+
+                $("#preview_url").attr('placeholder', 'Enter a valid URL');
+                $('#page_visit_section').removeClass('d-none');
+
+            }
         });
 
         
@@ -480,7 +529,7 @@ $(document).on('change','#type',function( e ) {
             ১১/ প্রতিটি সাবস্ক্রাইব ই ইউনিক হবে, একজন SMMTASK ইউজার শুধুমাত্র একবারই এই চ্যানেল সাবস্ক্রাইব করতে পারবে ফলে পরবর্তিতে সে আর কখনই এই চ্যানেল সাবস্ক্রাইব করার জন্য পাবে না।<br/>\
             </div>';
         $('#action_message').slideDown('fast').html(direction);
-        $('#price').val(200).prop('readonly',true);
+        $('#price').val(100).prop('readonly',true);
         $('#duration').val(120);
         
         $('#channel_url_section').removeClass('d-none');

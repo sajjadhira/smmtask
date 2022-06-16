@@ -24,6 +24,9 @@ class InvoicesController extends Controller
             return redirect('dashboard');
         }
 
+        if($request->has('page')){
+            Session::put('pageNum', $request->page);
+        }
         
         if (Auth::user()->role == 'superadmin') {
             $data['orders'] = Invoices::orderBy('id', 'desc')->paginate(10);
@@ -52,6 +55,12 @@ class InvoicesController extends Controller
                 return redirect('dashboard');
             }
         }
+
+        if($invoice->status > 0){
+            $message = ['type'=>'error','message'=>'Sorry! this invoice is already paid.'];
+            Session::flash('message', $message);
+            return redirect('dashboard');
+        }
         
 
         $invoice->status = 1;
@@ -78,7 +87,56 @@ class InvoicesController extends Controller
 
         $message = ['type'=>'success','message'=>'Invoice has been marked as paid'];
         Session::flash('message', $message);
-        return redirect('dashboard/invoices');
+
+        $pageNum = Session::get('pageNum');
+        if($pageNum!=""){
+            $pageToGo = '?page='.$pageNum;
+        }else{
+            $pageToGo = NULL;
+        }
+        return redirect('dashboard/invoices'.$pageToGo);
+        
+    }
+
+    
+    public function payment_undone($id){
+
+        if(Auth::user()->role != 'administrator' && Auth::user()->role != 'manager' && Auth::user()->role != 'superadmin'){
+            $message = ['type'=>'error','message'=>'Sorry! you are not authrized to access this page.'];
+            Session::flash('message',$message);
+            return redirect('dashboard');
+        }
+
+        $data['invoice'] = $invoice =  Invoices::findOrFail($id);
+        if(Auth::user()->role == 'administrator'  || Auth::user()->role == 'manager'){
+
+            if ($invoice->company != Auth::user()->company) {
+                $message = ['type'=>'error','message'=>'Sorry! you are not authrized to access this page.'];
+                Session::flash('message', $message);
+                return redirect('dashboard');
+            }
+        }
+        
+
+        if($invoice->status > 1){
+            $message = ['type'=>'error','message'=>'Sorry! this invoice is already marked as declined.'];
+            Session::flash('message', $message);
+            return redirect('dashboard');
+        }
+
+        $invoice->status = 2;
+        $invoice->save();
+
+        $message = ['type'=>'success','message'=>'Payment request denied!'];
+        Session::flash('message', $message);
+
+        $pageNum = Session::get('pageNum');
+        if($pageNum!=""){
+            $pageToGo = '?page='.$pageNum;
+        }else{
+            $pageToGo = NULL;
+        }
+        return redirect('dashboard/invoices'.$pageToGo);
         
     }
 

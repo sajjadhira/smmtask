@@ -31,6 +31,7 @@
                         <thead>
                           <tr>
                             <th>Task</th>
+                            <th>Task Type</th>
                             <th>PPA</th>
                             <th>Budget</th>
                             <th>Total Completed</th>
@@ -41,12 +42,24 @@
                         </thead>
                         <tbody>
                             @foreach ($tasks as $task)
+
+                            @php
+
+                              if($task->product_type == "Youtube Subscribe"){
+                                  $limit = 100;
+                                }else{
+                                  
+                                  $limit = 10;
+                              }
+
+                            @endphp
                             <tr>
                               <td>ID {{$task->id}} # {{$task->name}}</td>
+                              <td>{{__($task->product_type)}}</td>
                               <td>{{number_format($task->price)}} Points</td>
                               <td>{{number_format($task->budget)}} Points</td>
                               <td>{{number_format($task->amount_sold)}} Points ({{\App\Orders::where('product',$task->id)->get()->count()}})</td>
-                              <td>@if($task->status==0)<span class="text-success">Running</span>@elseif($task->budget==$task->aomunt_sold)<span class="text-success">Completed</span>@elseif($task->status==1)<span class="text-danger">Stopped</span>@elseif($task->status==2)<span class="text-danger">Closed</span>@elseif($task->status==3)<span class="text-danger">Declined</span> @endif</td>
+                              <td>@if($task->budget-$task->amount_sold>$limit)<span class="text-success">Running</span>@elseif($task->budget-$task->amount_sold<=$limit)<span class="text-success">Completed</span>@elseif($task->status==1)<span class="text-danger">Stopped</span>@elseif($task->status==2)<span class="text-danger">Closed</span>@elseif($task->status==3)<span class="text-danger">Declined</span> @endif</td>
                               <td>{{date("jS F Y",strtotime($task->created_at))}}</td>
                               <td>
                                 
